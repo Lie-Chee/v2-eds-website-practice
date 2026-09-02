@@ -2,6 +2,10 @@
 
 Edge Delivery Services. Read a block first. Omissions are in the repo or known.
 
+## Creating a new block for Datacom
+- For implementation workflow, use the `building-blocks` skill
+- For Datacom/Figma tokens, read `COMPONENTS.MD` before writing CSS
+
 ## Avoid
 - `scripts/aem.js` is vendored. Never edit.
 - Markup comes from the backend. `curl localhost:3000/x.plain.html` first.
@@ -19,4 +23,5 @@ Edge Delivery Services. Read a block first. Omissions are in the repo or known.
 - Merging `main` ships code; content publishes separately.
 - A PR without a `{branch}--{repo}--{owner}.aem.page/{path}` link is rejected.
 - All committed files are served. Use `.hlxignore`.
-- Skills: `/plugin marketplace add adobe/skills`, then `aem-edge-delivery-services` (24 skills, incl. `docs-search`).
+<!-- - Skills: `/plugin marketplace add adobe/skills`, then `aem-edge-delivery-services` (24 skills, incl. `docs-search`). -->
+- Skills: `building-blocks` in `.agents/skills/`; for full CDD workflow also add `content-driven-development` and `testing-blocks`

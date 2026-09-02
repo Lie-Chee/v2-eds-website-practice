@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "skills": {
+    "building-blocks": {
+      "source": "adobe/skills",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "plugins/aem/edge-delivery-services/skills/building-blocks/SKILL.md",
+      "computedHash": "8f67f0ecee8bb8a8b1f3b081776bda19e534e2cd610b5c6785a37850bf100b7a"
+    }
+  }
+}
