@@ -3,18 +3,15 @@ component.
 
 ### Reference Information
 
+Name of the block:
+[INSERT NAME]
+
 Component CSS class:
 [INSERT CLASS]
 Example: page-title-hero
 
 Reference page URL:
 [INSERT URL]
-
-Local EDS preview URL:
-[INSERT URL]
-
-Repository:
-[INSERT PATH OR URL]
 
 Design reference (optional):
 [INSERT FIGMA OR SCREENSHOT]
@@ -31,14 +28,17 @@ Follow this workflow:
 4. block-collection-and-party
 5. content-modeling
 6. building-blocks
-7. testing-blocks
-8. code-review
+7. code-review
+
+Skip `testing-blocks`. Do not open, inspect, or validate a local preview
+URL. The user will test the implementation manually.
 
 Use docs-search and da-content whenever Adobe EDS guidance is required.
 
 ### Chrome DevTools MCP Discovery
 
-Use Chrome DevTools MCP to:
+Use Chrome DevTools MCP on the reference page only. Do not use it to inspect
+or validate the local EDS implementation.
 
 1. Open the reference page.
 2. Locate the component using the CSS selector:
@@ -53,6 +53,7 @@ Use Chrome DevTools MCP to:
    - Images
    - Links
    - Variants
+   - Animations, transitions, and scroll effects, if present
    - Console messages
    - Relevant network requests
 
@@ -86,6 +87,18 @@ Use content-modeling to determine whether the correct solution is:
 - New block
 
 Explain the decision.
+
+### Motion and animation (optional)
+
+Only if the reference component has visible motion:
+
+- Identify animations, transitions, scroll effects, and other motion
+- Document triggers, timing, and affected elements
+- Replicate equivalent motion in the block implementation where practical
+- Respect `prefers-reduced-motion` where motion is implemented
+- Note any animation intentionally omitted and why
+
+If the reference component has no meaningful motion, skip this section.
 
 ### Existing Project Assessment
 
@@ -130,32 +143,18 @@ Requirements:
 - Minimal JavaScript
 - No unnecessary dependencies
 
-### Validation
+### Manual Testing Handoff
 
-Use Chrome DevTools MCP to compare:
+Do not run browser validation against a local preview.
 
-Reference Component
-vs
-New EDS Implementation
+Provide a concise manual test checklist for the user, including:
 
-Validate:
-
-- Layout
-- Responsiveness
-- Content behaviour
-- Accessibility
-- Console output
-- Network requests
-
-Classify differences as:
-
-- Intentional EDS adaptation
-- Accessibility improvement
-- Authoring improvement
-- Responsive improvement
-- Defect
-
-Fix defects before completion.
+- Suggested test content path
+- Variants to verify
+- Key behaviours to check
+- Responsive breakpoints to review
+- Accessibility checks to perform
+- Animation and motion checks, if applicable
 
 ### Deliverables
 
@@ -166,8 +165,6 @@ Provide:
 3. Authoring example
 4. Files created
 5. Files modified
-6. Browser inspection summary
-7. Test results
-8. Screenshot comparisons
-9. Accessibility findings
-10. Known limitations
+6. Reference page inspection summary
+7. Manual test checklist
+8. Known limitations
