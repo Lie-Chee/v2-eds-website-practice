@@ -6,15 +6,23 @@ component.
 Name of the block:
 [INSERT NAME]
 
-Component CSS class:
+Component CSS class (optional; use with a reference page URL):
 [INSERT CLASS]
 Example: page-title-hero
 
-Reference page URL:
-[INSERT URL]
+Reference page URL (optional):
+[INSERT URL OR LEAVE BLANK]
 
-Design reference (optional):
-[INSERT FIGMA OR SCREENSHOT]
+Figma design reference (optional):
+[INSERT FIGMA URL OR LEAVE BLANK]
+
+At least one reference is required. If neither a reference page URL nor a
+Figma design reference is provided, stop and ask the user to provide one
+before continuing.
+
+If a Figma design reference is provided, use only the Figma MCP for reference
+discovery. Do not use Chrome DevTools MCP, even if a reference page URL is
+also provided.
 
 ### Required Workflow
 
@@ -35,16 +43,20 @@ URL. The user will test the implementation manually.
 
 Use docs-search and da-content whenever Adobe EDS guidance is required.
 
-### Chrome DevTools MCP Discovery
+### Reference Discovery
 
-Use Chrome DevTools MCP on the reference page only. Do not use it to inspect
-or validate the local EDS implementation.
+Choose the applicable discovery workflow based on the supplied reference.
+Figma takes precedence when both reference types are provided.
+
+#### Reference page URL
+
+Use this workflow only when a reference page URL is provided and no Figma
+design reference is provided. Use Chrome DevTools MCP on the reference page
+only. Do not use it to inspect or validate the local EDS implementation.
 
 1. Open the reference page.
-2. Locate the component using the CSS selector:
-
-   .[INSERT CLASS]
-
+2. Locate the component using the supplied CSS selector. If no selector was
+   provided, inspect the page and identify the component before continuing.
 3. Capture:
    - Rendered DOM
    - Computed styles
@@ -63,6 +75,25 @@ or validate the local EDS implementation.
    - Desktop
 
 5. Capture screenshots for all tested breakpoints.
+
+#### Figma design reference
+
+If a Figma reference is provided, use the Figma MCP design-to-code workflow
+to inspect the referenced component or frame. Do not use Chrome DevTools MCP
+for reference discovery or implementation validation.
+
+Capture:
+
+- Design structure and component hierarchy
+- Component properties and variants
+- Typography, colors, spacing, and layout
+- Images, icons, and other assets
+- Responsive or layout constraints
+- Interaction and motion details, if present
+
+Use the Figma output as a design reference to adapt to this repository. Reuse
+the project's existing blocks, patterns, and Datacom style tokens rather than
+copying generated code verbatim.
 
 ### Analysis
 
@@ -122,6 +153,17 @@ Provide:
 - Optional fields
 - Required fields
 
+Add the authoring example to a JSDoc-style file header comment in the block's
+JavaScript file, following the pattern used in `blocks/hero/hero.js`. The
+comment must include:
+
+- A short description of the block and its variants
+- A complete authoring table example
+- A compact or minimum example when useful
+- Required and optional content rules
+- Relevant formatting instructions for authors
+- An HTML table equivalent when it improves clarity
+
 Ensure authors never need to enter:
 
 - CSS classes
@@ -165,6 +207,6 @@ Provide:
 3. Authoring example
 4. Files created
 5. Files modified
-6. Reference page inspection summary
+6. Reference inspection summary
 7. Manual test checklist
 8. Known limitations

@@ -583,11 +583,13 @@ function decorateBlocks(main) {
  */
 async function loadHeader(header) {
   const headerBlock = buildBlock('header', '');
+  // const fallback = buildBlock('cards', '');
   const existingHeaderBlock = header.querySelector(':scope > .header');
   if (existingHeaderBlock) {
     existingHeaderBlock.replaceWith(headerBlock);
   } else {
     header.append(headerBlock);
+    // header.append(fallback);
   }
   decorateBlock(headerBlock);
   return loadBlock(headerBlock);
