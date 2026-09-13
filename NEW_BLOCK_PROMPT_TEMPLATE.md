@@ -16,13 +16,31 @@ Reference page URL (optional):
 Figma design reference (optional):
 [INSERT FIGMA URL OR LEAVE BLANK]
 
-At least one reference is required. If neither a reference page URL nor a
-Figma design reference is provided, stop and ask the user to provide one
-before continuing.
+Repository file reference (optional):
+[INSERT REPO PATH OR LEAVE BLANK]
+Example: `blocks/hero/hero.js`, `drafts/tmp/example.plain.html`
+
+At least one reference is required. Valid references are:
+
+- Reference page URL
+- Figma design reference
+- Repository file reference
+
+If none are provided, stop and ask the user to provide one before continuing.
+
+Reference precedence:
+
+1. Figma design reference
+2. Repository file reference
+3. Reference page URL
 
 If a Figma design reference is provided, use only the Figma MCP for reference
-discovery. Do not use Chrome DevTools MCP, even if a reference page URL is
-also provided.
+discovery. Do not use Chrome DevTools MCP, even if a reference page URL or
+repository file is also provided.
+
+If a repository file reference is provided and no Figma reference is provided,
+inspect that file and related local files directly. Do not use Chrome DevTools
+MCP or Figma MCP for reference discovery.
 
 ### Required Workflow
 
@@ -46,7 +64,7 @@ Use docs-search and da-content whenever Adobe EDS guidance is required.
 ### Reference Discovery
 
 Choose the applicable discovery workflow based on the supplied reference.
-Figma takes precedence when both reference types are provided.
+Follow the precedence rules above.
 
 #### Reference page URL
 
@@ -94,6 +112,28 @@ Capture:
 Use the Figma output as a design reference to adapt to this repository. Reuse
 the project's existing blocks, patterns, and Datacom style tokens rather than
 copying generated code verbatim.
+
+#### Repository file reference
+
+Use this workflow when a repository file path is provided and no Figma
+design reference is provided. Do not use Chrome DevTools MCP or Figma MCP
+for reference discovery.
+
+1. Read the referenced file and any closely related files in the same folder
+   or feature area (for example matching `.css`, `.js`, sibling blocks, or
+   nearby test content).
+2. Identify:
+   - Component purpose and behaviour
+   - DOM structure or authored content structure
+   - Variants and optional content
+   - Styling approach and token usage
+   - JavaScript decoration patterns
+   - Animations, transitions, and scroll effects, if present
+3. Treat the file as a starting point to adapt, not code to copy verbatim.
+   Align the result with this repository's block conventions, Datacom style
+   tokens, and authoring model.
+4. If the referenced file is another block, prefer extending or adapting that
+   pattern only when the content model and behaviour remain a good fit.
 
 ### Analysis
 
