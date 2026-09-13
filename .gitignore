@@ -8,7 +8,7 @@ helix-importer-ui
 *.bak
 .idea
 NEW_BLOCK.md
-
+aem-components/*
 # Ensure these files are tracked
 !CLAUDE.md
 !AGENTS.md
