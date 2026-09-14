@@ -1,0 +1,247 @@
+.text-with-image {
+  --text-with-image-background: transparent;
+  --text-with-image-foreground: var(--font-color-default);
+
+  box-sizing: border-box;
+  background-color: var(--text-with-image-background);
+  color: var(--text-with-image-foreground);
+}
+
+main .text-with-image-container:has(.text-with-image.wide-image)
+  > .text-with-image-wrapper {
+  max-width: none;
+  padding-inline: 0;
+}
+
+.text-with-image .text-with-image-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-with-image .text-with-image-content {
+  order: 1;
+  padding-block: var(--spacing-layout-04);
+}
+
+.text-with-image .text-with-image-media {
+  order: 0;
+  line-height: 0;
+}
+
+.text-with-image .text-with-image-media picture {
+  display: block;
+  height: 100%;
+}
+
+.text-with-image .text-with-image-media img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--spacing-padding-02);
+  object-fit: cover;
+}
+
+.text-with-image .text-with-image-eyebrow {
+  margin: 0 0 var(--spacing-layout-01);
+  font-family: var(--typography-font-family-600);
+  font-size: var(--font-16-size);
+  font-weight: 600;
+  line-height: var(--font-16-line-height);
+}
+
+.text-with-image .text-with-image-content h1,
+.text-with-image .text-with-image-content h2,
+.text-with-image .text-with-image-content h3,
+.text-with-image .text-with-image-content h4,
+.text-with-image .text-with-image-content h5,
+.text-with-image .text-with-image-content h6 {
+  margin: 0 0 var(--spacing-layout-03);
+  font-family: var(--typography-font-family-300);
+  font-size: var(--font-32-size);
+  font-weight: 300;
+  line-height: var(--font-32-line-height);
+}
+
+.text-with-image .text-with-image-content > p:not(
+  .text-with-image-eyebrow,
+  .button-wrapper
+) {
+  margin: 0 0 var(--spacing-layout-03);
+  font-family: var(--typography-font-family-400);
+  font-size: var(--font-16-size);
+  line-height: var(--font-16-line-height);
+}
+
+.text-with-image .text-with-image-content .button-wrapper {
+  display: block;
+  margin: var(--spacing-padding-04) 0 0;
+}
+
+.text-with-image .text-with-image-content .button {
+  width: 100%;
+}
+
+.text-with-image.dark {
+  --text-with-image-background: var(--color-midnight-blue-base);
+  --text-with-image-foreground: var(--color-white);
+
+  padding: var(--spacing-layout-04);
+}
+
+.text-with-image.light {
+  --text-with-image-background: var(--color-electric-blue-minus-4);
+
+  padding: var(--spacing-layout-04);
+}
+
+.text-with-image.white {
+  --text-with-image-background: var(--color-white);
+
+  padding: var(--spacing-layout-04);
+}
+
+.text-with-image.dark .button.primary:any-link {
+  border-color: var(--color-white);
+  background-color: var(--color-white);
+  color: var(--color-electric-blue-base);
+}
+
+.text-with-image.dark .button.secondary:any-link {
+  border-color: var(--color-white);
+  color: var(--color-white);
+}
+
+.text-with-image.dark .button.primary:hover,
+.text-with-image.dark .button.primary:focus-visible,
+.text-with-image.dark .button.secondary:hover,
+.text-with-image.dark .button.secondary:focus-visible {
+  border-color: var(--color-electric-blue-minus-4);
+  background-color: var(--color-electric-blue-minus-4);
+  color: var(--color-electric-blue-plus-1);
+}
+
+.text-with-image.wide-image {
+  padding: 0;
+}
+
+.text-with-image.wide-image .text-with-image-content {
+  padding: var(--spacing-layout-04) var(--spacing-layout-03);
+}
+
+.text-with-image.wide-image .text-with-image-media img {
+  border-radius: 0;
+}
+
+.text-with-image.text-with-image-motion .text-with-image-content {
+  opacity: 0;
+  transform: translateX(var(--spacing-layout-06));
+  transition:
+    opacity 1.5s ease,
+    transform 1.5s ease;
+}
+
+.text-with-image.image-left.text-with-image-motion .text-with-image-content {
+  transform: translateX(calc(-1 * var(--spacing-layout-06)));
+}
+
+.text-with-image.text-with-image-motion.is-visible .text-with-image-content {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-with-image.text-with-image-motion .text-with-image-content {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@media (width > 500px) {
+  .text-with-image .text-with-image-content .button-wrapper {
+    display: inline-block;
+    margin-inline-end: var(--spacing-padding-04);
+  }
+
+  .text-with-image .text-with-image-content .button {
+    width: auto;
+  }
+}
+
+@media (width >= 900px) {
+  .text-with-image .text-with-image-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: var(--spacing-layout-07);
+  }
+
+  .text-with-image.align-top .text-with-image-layout {
+    align-items: start;
+  }
+
+  .text-with-image .text-with-image-content {
+    order: 0;
+    padding-block: 0;
+  }
+
+  .text-with-image .text-with-image-media {
+    order: 1;
+  }
+
+  .text-with-image.image-left .text-with-image-content {
+    order: 1;
+  }
+
+  .text-with-image.image-left .text-with-image-media {
+    order: 0;
+  }
+
+  .text-with-image .text-with-image-content h1,
+  .text-with-image .text-with-image-content h2,
+  .text-with-image .text-with-image-content h3,
+  .text-with-image .text-with-image-content h4,
+  .text-with-image .text-with-image-content h5,
+  .text-with-image .text-with-image-content h6 {
+    font-size: var(--font-40-size);
+    line-height: var(--font-40-line-height);
+  }
+
+  .text-with-image.compact .text-with-image-layout {
+    gap: var(--spacing-layout-06);
+  }
+
+  .text-with-image.wide-image .text-with-image-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+    gap: 0;
+    min-height: 400px;
+  }
+
+  .text-with-image.wide-image.image-left .text-with-image-layout {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+
+  .text-with-image.wide-image .text-with-image-content {
+    max-width: 580px;
+    padding: var(--spacing-layout-06) var(--spacing-layout-07);
+  }
+
+  .text-with-image.wide-image:not(.image-left) .text-with-image-content {
+    justify-self: end;
+  }
+
+  .text-with-image.wide-image .text-with-image-media,
+  .text-with-image.wide-image .text-with-image-media picture,
+  .text-with-image.wide-image .text-with-image-media img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .text-with-image.wide-image .text-with-image-media img {
+    aspect-ratio: auto;
+  }
+
+  .text-with-image.wide-image.compact .text-with-image-layout {
+    min-height: 0;
+  }
+}
