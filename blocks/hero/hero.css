@@ -46,15 +46,15 @@
   z-index: -1;
   inset: 0;
   background: linear-gradient(
-    90deg,
-    var(--color-electric-blue-base) 0%,
-    rgb(0 43 254 / 70%) 45%,
-    transparent 100%
+    to right,
+    rgb(0 43 254 / 60%) 0%,
+    rgb(0 43 254 / 60%) 39%,
+    rgb(0 43 254 / 0%) 100%
   );
   pointer-events: none;
 }
 
-.hero.full-width-banner .hero-banner-background-picture {
+.hero.full-width-banner .hero-banner-background {
   position: absolute;
   z-index: -2;
   inset: 0;
@@ -66,86 +66,31 @@
 .hero.full-width-banner .hero-banner-content {
   box-sizing: border-box;
   display: flex;
-  align-items: flex-end;
+  justify-content: center;
   width: 100%;
   min-height: 486px;
   max-width: var(--max-width-desktop);
   margin-inline: auto;
-  padding: var(--spacing-layout-03);
+  padding-inline: var(--spacing-padding-05);
 }
 
 .hero.full-width-banner .hero-banner-content-inner {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: center;
   width: 100%;
+  min-height: inherit;
 }
 
-@keyframes hero-banner-slide-up {
-  from {
-    transform: translateY(100%);
-  }
-
-  to {
-    transform: translateY(0);
-  }
-}
-
-.hero.full-width-banner .hero-banner-reveal {
-  overflow: hidden;
-}
-
-.hero.full-width-banner .hero-banner-reveal > span,
-.hero.full-width-banner .hero-banner-cta-reveal a.button:any-link {
-  display: block;
-  animation: hero-banner-slide-up 0.6s ease-out both;
-}
-
-.hero.full-width-banner .hero-banner-logo-container {
-  overflow: hidden;
+.hero.full-width-banner .hero-banner-subheading {
+  max-width: 900px;
   margin: 0 0 var(--spacing-padding-02);
-}
-
-.hero.full-width-banner .hero-banner-logo-animate {
-  animation: hero-banner-slide-up 0.6s ease-out 0.4s both;
-}
-
-.hero.full-width-banner .hero-banner-cta-reveal {
-  overflow: hidden;
-}
-
-.hero.full-width-banner .hero-banner-cta-reveal a.button:any-link {
-  animation-delay: 0.5s;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero.full-width-banner .hero-banner-reveal > span,
-  .hero.full-width-banner .hero-banner-logo-animate,
-  .hero.full-width-banner .hero-banner-cta-reveal a.button:any-link {
-    animation: none;
-    transform: none;
-  }
-}
-
-.hero.full-width-banner .hero-banner-logo {
-  position: static;
-  z-index: auto;
-  display: block;
-  width: auto;
-  height: 60px;
-  margin-block-end: var(--spacing-padding-02);
-}
-
-.hero.full-width-banner .hero-banner-logo-container .hero-banner-logo {
-  margin: 0;
-}
-
-.hero.full-width-banner .hero-banner-logo img {
-  width: auto;
-  max-width: 100%;
-  height: 60px;
-  object-fit: contain;
-  object-position: left center;
+  color: var(--color-white);
+  font-family: var(--typography-font-family-500);
+  font-size: var(--font-18-size);
+  font-weight: 500;
+  line-height: var(--font-18-line-height);
 }
 
 .hero.full-width-banner h1 {
@@ -158,7 +103,7 @@
   line-height: var(--font-32-line-height);
 }
 
-.hero.full-width-banner .hero-banner-content-inner > p:not(.button-wrapper, .hero-banner-logo-container) {
+.hero.full-width-banner .hero-banner-supporting-text {
   max-width: 900px;
   margin: var(--spacing-layout-01) 0 0;
   font-family: var(--typography-font-family-500);
@@ -197,13 +142,12 @@
   }
 
   .hero.full-width-banner .hero-banner-content {
-    align-items: center;
+    justify-content: center;
     min-height: 440px;
   }
 
-  .hero.full-width-banner .hero-banner-logo,
-  .hero.full-width-banner .hero-banner-logo img {
-    height: 80px;
+  .hero.full-width-banner .hero-banner-content-inner {
+    width: 85%;
   }
 
   .hero.full-width-banner h1 {
@@ -233,7 +177,11 @@
 
   .hero.full-width-banner .hero-banner-content {
     min-height: 560px;
-    padding-inline: 0;
+    padding-inline: var(--spacing-padding-08);
+  }
+
+  .hero.full-width-banner .hero-banner-content-inner {
+    width: 65%;
   }
 
   .hero.full-width-banner h1 {

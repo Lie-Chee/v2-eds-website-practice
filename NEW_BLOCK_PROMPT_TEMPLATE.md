@@ -183,26 +183,14 @@ Prefer reuse before creating a new block.
 
 ### Authoring Model
 
-Design a document authoring model.
+Design a document authoring model as part of analysis and content-modeling.
 
-Provide:
+Determine:
 
-- Example document structure
 - Block table structure if needed
 - Variant strategy
 - Optional fields
 - Required fields
-
-Add the authoring example to a JSDoc-style file header comment in the block's
-JavaScript file, following the pattern used in `blocks/hero/hero.js`. The
-comment must include:
-
-- A short description of the block and its variants
-- A complete authoring table example
-- A compact or minimum example when useful
-- Required and optional content rules
-- Relevant formatting instructions for authors
-- An HTML table equivalent when it improves clarity
 
 Ensure authors never need to enter:
 
@@ -210,6 +198,10 @@ Ensure authors never need to enter:
 - HTML
 - DOM structure
 - Pixel values
+
+Do not add a document authoring example after creating the code. Do not add
+authoring table examples to the block JavaScript file header, and do not
+include a separate authoring example as a deliverable.
 
 ### Implementation
 
@@ -244,9 +236,8 @@ Provide:
 
 1. Analysis summary
 2. Selected authoring pattern
-3. Authoring example
-4. Files created
-5. Files modified
-6. Reference inspection summary
-7. Manual test checklist
-8. Known limitations
+3. Files created
+4. Files modified
+5. Reference inspection summary
+6. Manual test checklist
+7. Known limitations
