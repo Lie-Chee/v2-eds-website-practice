@@ -1,11 +1,38 @@
 /**
- * Decorates authored rows as an accessible breadcrumb trail.
- * Each non-empty row represents one breadcrumb item.
+ * Converts a URL segment into a readable breadcrumb label.
+ * @param {string} segment URL path segment
+ * @returns {string} readable label
+ */
+function getLabel(segment) {
+  let decoded = segment;
+  try {
+    decoded = decodeURIComponent(segment);
+  } catch {
+    // Keep malformed URL segments unchanged.
+  }
+
+  return decoded
+    .replace(/\.html$/i, '')
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
+/**
+ * Builds an accessible breadcrumb trail from the current URL.
  * @param {Element} block The breadcrumbs block
  */
 export default function decorate(block) {
-  const items = [...block.children].filter((row) => row.textContent.trim());
-  if (!items.length) return;
+  const segments = window.location.pathname
+    .replace(/\/index(?:\.html)?$/i, '/')
+    .split('/')
+    .filter(Boolean);
+  const items = [{ label: 'Home', path: '/' }];
+  let path = '';
+
+  segments.forEach((segment) => {
+    path += `/${segment.replace(/\.html$/i, '')}`;
+    items.push({ label: getLabel(segment), path });
+  });
 
   const nav = document.createElement('nav');
   nav.setAttribute('aria-label', 'Breadcrumb');
@@ -13,22 +40,29 @@ export default function decorate(block) {
   const list = document.createElement('ol');
   const iconPath = `${window.hlx?.codeBasePath || ''}/icons/breadcrumb-chevron-link.svg`;
 
-  items.forEach((row, index) => {
+  items.forEach(({ label, path: itemPath }, index) => {
     const item = document.createElement('li');
-    const authoredLink = row.querySelector('a[href]');
-    const content = authoredLink || document.createElement('span');
+    const isCurrentPage = index === items.length - 1;
+    const content = document.createElement(isCurrentPage ? 'span' : 'a');
 
-    if (!authoredLink) content.textContent = row.textContent.trim();
-    if (index === items.length - 1) content.setAttribute('aria-current', 'page');
+    content.textContent = label;
+    if (isCurrentPage) {
+      content.setAttribute('aria-current', 'page');
+    } else {
+      content.href = itemPath;
+    }
 
-    const chevron = document.createElement('img');
-    chevron.className = 'breadcrumbs-chevron';
-    chevron.src = iconPath;
-    chevron.alt = '';
-    chevron.width = 6;
-    chevron.height = 10;
+    item.append(content);
 
-    item.append(content, chevron);
+    if (!isCurrentPage) {
+      const chevron = document.createElement('img');
+      chevron.className = 'breadcrumbs-chevron';
+      chevron.src = iconPath;
+      chevron.alt = '';
+      chevron.width = 6;
+      chevron.height = 10;
+      item.append(chevron);
+    }
     list.append(item);
   });
 
