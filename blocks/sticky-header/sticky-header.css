@@ -1,0 +1,214 @@
+.sticky-header-container .sticky-header-wrapper {
+  max-width: unset;
+  padding: 0;
+}
+
+.sticky-header-wrapper.has-sticky-header {
+  min-height: 81px;
+}
+
+.sticky-header {
+  box-sizing: border-box;
+  width: 100%;
+  height: 81px;
+  background-color: var(--color-white);
+}
+
+.sticky-header.is-sticky {
+  position: fixed;
+  z-index: 1;
+  top: var(--header-height-mobile);
+  right: 0;
+  left: 0;
+  transition: top 0.3s ease-in-out;
+}
+
+.sticky-header nav {
+  position: relative;
+  box-sizing: border-box;
+  height: 100%;
+  max-width: calc(var(--max-width-desktop) + 2 * var(--spacing-padding-08));
+  margin-inline: auto;
+  padding-inline: var(--spacing-padding-05);
+}
+
+.sticky-header ul {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border-bottom: 1px solid var(--color-light-grey);
+  padding: 0;
+  list-style: none;
+  background-color: var(--color-white);
+}
+
+.sticky-header li {
+  position: relative;
+  display: none;
+  flex: 0 0 auto;
+}
+
+.sticky-header li.is-active {
+  display: block;
+  height: 80px;
+}
+
+.sticky-header a:any-link {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  height: 80px;
+  padding: 28px 48px 28px 0;
+  color: var(--font-color-default);
+  font-family: var(--typography-font-family-500);
+  font-size: var(--font-14-size);
+  font-weight: 500;
+  line-height: var(--font-14-line-height);
+  letter-spacing: var(--letter-spacing-small);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.sticky-header-number {
+  display: inline-block;
+  width: 30px;
+  color: var(--color-action-blue);
+  font-weight: 700;
+}
+
+.sticky-header-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: none;
+  width: 0;
+  height: 4px;
+  border-radius: var(--spacing-padding-02);
+  background-color: var(--color-action-blue);
+  transition: width 0.2s ease-in-out;
+}
+
+.sticky-header-toggle {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  right: var(--spacing-padding-04);
+  width: 28px;
+  height: 28px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.sticky-header-toggle .fa-chevron-down {
+  color: var(--color-action-blue);
+  font-size: 28px;
+  transition: transform 0.2s linear;
+}
+
+.sticky-header a:focus-visible {
+  border-radius: var(--spacing-padding-02);
+  outline: 3px solid var(--color-action-blue);
+  outline-offset: -3px;
+}
+
+.sticky-header.is-open ul {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: auto;
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 0 0 var(--spacing-padding-02) var(--spacing-padding-02);
+  box-shadow: 0 3px 6px rgb(0 0 0 / 10%);
+}
+
+.sticky-header.is-open li {
+  display: block;
+  min-height: 56px;
+}
+
+.sticky-header.is-open li:not(.is-active) a:any-link {
+  height: 56px;
+  padding: var(--spacing-padding-04) var(--spacing-padding-05);
+}
+
+.sticky-header.is-open .sticky-header-toggle .fa-chevron-down {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticky-header.is-sticky,
+  .sticky-header-progress,
+  .sticky-header-toggle .fa-chevron-down {
+    transition: none;
+  }
+}
+
+@media (width > 900px) {
+  .sticky-header.is-sticky {
+    top: 0;
+  }
+
+  .sticky-header nav {
+    padding-inline: var(--spacing-padding-08);
+    overflow: hidden;
+  }
+
+  .sticky-header ul,
+  .sticky-header.is-open ul {
+    position: static;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    overflow: auto hidden;
+    border-radius: 0;
+    box-shadow: none;
+    scrollbar-width: none;
+  }
+
+  .sticky-header ul::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sticky-header li,
+  .sticky-header.is-open li {
+    display: block;
+    height: 80px;
+    min-height: 0;
+  }
+
+  .sticky-header a:any-link,
+  .sticky-header.is-open li:not(.is-active) a:any-link {
+    box-sizing: content-box;
+    width: 10rem;
+    max-width: 208px;
+    height: 80px;
+    padding: var(--spacing-padding-04) var(--spacing-padding-04) var(--spacing-padding-04) var(--spacing-padding-03);
+  }
+
+  .sticky-header-number {
+    display: block;
+    width: auto;
+  }
+
+  .sticky-header li:hover {
+    background-color: var(--color-extra-light-grey);
+  }
+
+  .sticky-header-progress {
+    display: block;
+  }
+
+  .sticky-header-toggle {
+    display: none;
+  }
+}
