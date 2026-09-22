@@ -634,7 +634,7 @@ main > .section {
 }
 
 main > .section > div {
-  max-width: 1200px;
+  max-width: var(--max-width-desktop);
   margin: auto;
   padding: 0 24px;
 }

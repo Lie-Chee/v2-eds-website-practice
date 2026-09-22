@@ -1,6 +1,15 @@
+.columns-wrapper:has(> .columns.content-width) {
+  box-sizing: content-box;
+  max-width: var(--max-width-desktop);
+  margin-inline: auto;
+  padding-inline: var(--spacing-padding-05);
+  width: auto;
+}
+
 .columns > div {
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-layout-02);
 }
 
 .columns img {
@@ -19,15 +28,30 @@
   display: block;
 }
 
+@media (width > 900px) {
+  .columns-wrapper:has(> .columns.content-width) {
+    padding-inline: var(--spacing-padding-08);
+  }
+
+  .columns > div {
+    gap: var(--spacing-layout-04);
+  }
+}
+
 @media (width >= 900px) {
   .columns > div {
-    align-items: center;
+    align-items: flex-start;
     flex-direction: unset;
-    gap: 24px;
   }
 
   .columns > div > div {
     flex: 1;
     order: unset;
+  }
+}
+
+@media (width > 1300px) {
+  .columns > div {
+    gap: var(--spacing-layout-06);
   }
 }
