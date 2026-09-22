@@ -20,6 +20,79 @@ function getTextElement(row, className) {
   return element;
 }
 
+function splitTextLines(element, text) {
+  const words = text.split(/\s+/).filter(Boolean);
+  const measureWords = words.map((word, index) => {
+    const span = document.createElement('span');
+    span.className = 'hero-banner-measure-word';
+    span.textContent = `${word}${index < words.length - 1 ? ' ' : ''}`;
+    return span;
+  });
+
+  element.replaceChildren(...measureWords);
+
+  const lines = [];
+  measureWords.forEach((word) => {
+    const currentLine = lines.at(-1);
+    if (!currentLine || currentLine.top !== word.offsetTop) {
+      lines.push({ top: word.offsetTop, words: [word.textContent.trim()] });
+    } else {
+      currentLine.words.push(word.textContent.trim());
+    }
+  });
+
+  element.replaceChildren(...lines.map((line, index) => {
+    const reveal = document.createElement('span');
+    reveal.className = 'hero-banner-reveal';
+
+    const content = document.createElement('span');
+    content.style.setProperty('--hero-banner-delay', `${(index + 1) * 0.1}s`);
+    content.textContent = `${line.words.join(' ')}${index < lines.length - 1 ? ' ' : ''}`;
+    reveal.append(content);
+    return reveal;
+  }));
+}
+
+function decorateRevealText(element) {
+  if (!element) return;
+
+  const text = element.textContent.trim();
+  if (!text) return;
+
+  splitTextLines(element, text);
+
+  if ('ResizeObserver' in window) {
+    let { width } = element.getBoundingClientRect();
+    const observer = new ResizeObserver(([entry]) => {
+      const { width: nextWidth } = entry.contentRect;
+      if (Math.abs(nextWidth - width) < 1) return;
+      width = nextWidth;
+      splitTextLines(element, text);
+    });
+    observer.observe(element);
+  }
+
+  if (document.fonts?.status === 'loading') {
+    document.fonts.ready.then(() => splitTextLines(element, text));
+  }
+}
+
+function setupEntranceAnimation(block) {
+  block.classList.add('hero-banner-animation-ready');
+
+  if (!('IntersectionObserver' in window)) {
+    block.classList.add('is-visible');
+    return;
+  }
+
+  const observer = new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) return;
+    block.classList.add('is-visible');
+    observer.disconnect();
+  });
+  observer.observe(block);
+}
+
 /**
  * Decorates the full-width banner hero variant.
  * @param {Element} block hero block
@@ -28,8 +101,8 @@ export default function decorate(block) {
   if (!block.classList.contains('full-width-banner')) return;
 
   const rows = [...block.children];
-  const imageRow = rows.find((row) => row.querySelector('picture'));
   const imageRows = rows.filter((row) => row.querySelector('picture'));
+  const [backgroundRow, logoRow] = imageRows;
   const heading = block.querySelector('h1');
   const headingRow = heading && rows.find((row) => row.contains(heading));
   const ctaRow = rows.find((row) => {
@@ -49,8 +122,17 @@ export default function decorate(block) {
     row !== subheadingRow && (headingIndex < 0 || rows.indexOf(row) > headingIndex)
   ));
 
-  const background = imageRow?.querySelector('picture');
+  const background = backgroundRow?.querySelector('picture');
   background?.classList.add('hero-banner-background');
+
+  const logo = logoRow?.querySelector('picture');
+  let logoContainer = null;
+  if (logo) {
+    logo.classList.add('hero-banner-logo');
+    logoContainer = document.createElement('div');
+    logoContainer.className = 'hero-banner-logo-container';
+    logoContainer.append(logo);
+  }
 
   const subheading = getTextElement(subheadingRow, 'hero-banner-subheading');
   const supportingText = getTextElement(supportingRow, 'hero-banner-supporting-text');
@@ -62,11 +144,12 @@ export default function decorate(block) {
     ctaLink.className = 'button primary';
   }
 
-  const contentElements = [subheading, heading, supportingText, cta].filter(Boolean);
-  if (!background && !contentElements.length) {
+  const copyElements = [subheading, heading, supportingText, cta].filter(Boolean);
+  if (!background && !copyElements.length) {
     block.remove();
     return;
   }
+  const contentElements = [logoContainer, ...copyElements].filter(Boolean);
 
   const content = document.createElement('div');
   content.className = 'hero-banner-content';
@@ -76,4 +159,6 @@ export default function decorate(block) {
   content.append(contentInner);
 
   block.replaceChildren(...[background, content].filter(Boolean));
+  [subheading, heading, supportingText].forEach(decorateRevealText);
+  setupEntranceAnimation(block);
 }

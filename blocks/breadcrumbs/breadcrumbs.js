@@ -1,4 +1,14 @@
 /**
+ * Breadcrumbs that always appear before the current page.
+ * Update this list to maintain ancestor labels, URLs, or ordering.
+ */
+const ANCESTOR_ITEMS = [
+  { label: 'Home', path: 'https://datacom.com' },
+  { label: 'Who we are', path: 'https://datacom.com/nz/en/about-us/who-we-are' },
+  { label: 'Partners', path: 'https://datacom.com/nz/en/about-us/partners' },
+];
+
+/**
  * Converts a URL segment into a readable breadcrumb label.
  * @param {string} segment URL path segment
  * @returns {string} readable label
@@ -26,13 +36,11 @@ export default function decorate(block) {
     .replace(/\/index(?:\.html)?$/i, '/')
     .split('/')
     .filter(Boolean);
-  const items = [{ label: 'Home', path: '/' }];
-  let path = '';
-
-  segments.forEach((segment) => {
-    path += `/${segment.replace(/\.html$/i, '')}`;
-    items.push({ label: getLabel(segment), path });
-  });
+  const currentSegment = segments.at(-1);
+  const items = [
+    ...ANCESTOR_ITEMS,
+    ...(currentSegment ? [{ label: getLabel(currentSegment) }] : []),
+  ];
 
   const nav = document.createElement('nav');
   nav.setAttribute('aria-label', 'Breadcrumb');
