@@ -41,6 +41,22 @@ main .text-with-image-container:has(.text-with-image.wide-image)
   object-fit: cover;
 }
 
+.text-with-image .text-with-image-video-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--spacing-padding-02);
+  background-color: var(--color-midnight-blue-base);
+}
+
+.text-with-image .text-with-image-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 .text-with-image .text-with-image-eyebrow {
   margin: 0 0 var(--spacing-layout-01);
   font-family: var(--typography-font-family-600);
@@ -60,6 +76,7 @@ main .text-with-image-container:has(.text-with-image.wide-image)
   font-size: var(--font-32-size);
   font-weight: 300;
   line-height: var(--font-32-line-height);
+  color: var(--color-white);
 }
 
 .text-with-image .text-with-image-content > p:not(
@@ -81,7 +98,8 @@ main .text-with-image-container:has(.text-with-image.wide-image)
   width: 100%;
 }
 
-.text-with-image.dark {
+.text-with-image.dark,
+.text-with-image.masterbrand-dark {
   --text-with-image-background: var(--color-midnight-blue-base);
   --text-with-image-foreground: var(--color-white);
 
@@ -100,13 +118,15 @@ main .text-with-image-container:has(.text-with-image.wide-image)
   padding: var(--spacing-layout-04);
 }
 
-.text-with-image.dark .button.primary:any-link {
+.text-with-image.dark .button.primary:any-link,
+.text-with-image.masterbrand-dark .button.primary:any-link {
   border-color: var(--color-white);
   background-color: var(--color-white);
   color: var(--color-electric-blue-base);
 }
 
-.text-with-image.dark .button.secondary:any-link {
+.text-with-image.dark .button.secondary:any-link,
+.text-with-image.masterbrand-dark .button.secondary:any-link {
   border-color: var(--color-white);
   color: var(--color-white);
 }
@@ -114,7 +134,11 @@ main .text-with-image-container:has(.text-with-image.wide-image)
 .text-with-image.dark .button.primary:hover,
 .text-with-image.dark .button.primary:focus-visible,
 .text-with-image.dark .button.secondary:hover,
-.text-with-image.dark .button.secondary:focus-visible {
+.text-with-image.dark .button.secondary:focus-visible,
+.text-with-image.masterbrand-dark .button.primary:hover,
+.text-with-image.masterbrand-dark .button.primary:focus-visible,
+.text-with-image.masterbrand-dark .button.secondary:hover,
+.text-with-image.masterbrand-dark .button.secondary:focus-visible {
   border-color: var(--color-electric-blue-minus-4);
   background-color: var(--color-electric-blue-minus-4);
   color: var(--color-electric-blue-plus-1);
@@ -128,7 +152,8 @@ main .text-with-image-container:has(.text-with-image.wide-image)
   padding: var(--spacing-layout-04) var(--spacing-layout-03);
 }
 
-.text-with-image.wide-image .text-with-image-media img {
+.text-with-image.wide-image .text-with-image-media img,
+.text-with-image.wide-image .text-with-image-video-wrapper {
   border-radius: 0;
 }
 
@@ -232,13 +257,19 @@ main .text-with-image-container:has(.text-with-image.wide-image)
 
   .text-with-image.wide-image .text-with-image-media,
   .text-with-image.wide-image .text-with-image-media picture,
-  .text-with-image.wide-image .text-with-image-media img {
+  .text-with-image.wide-image .text-with-image-media img,
+  .text-with-image.wide-image .text-with-image-video-wrapper {
     width: 100%;
     height: 100%;
   }
 
   .text-with-image.wide-image .text-with-image-media img {
     aspect-ratio: auto;
+  }
+
+  .text-with-image.wide-image .text-with-image-video-wrapper {
+    aspect-ratio: auto;
+    min-height: 400px;
   }
 
   .text-with-image.wide-image.compact .text-with-image-layout {
