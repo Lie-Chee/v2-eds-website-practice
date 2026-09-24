@@ -1,4 +1,5 @@
 const HARD_CLASSES = ['masterbrand-dark', 'wide-image', 'image-left', 'show-cta'];
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
  * Returns the sole cell for a one-column field row.
@@ -6,7 +7,7 @@ const HARD_CLASSES = ['masterbrand-dark', 'wide-image', 'image-left', 'show-cta'
  * @returns {Element | null}
  */
 function getFieldCell(row) {
-  return row?.firstElementChild;
+  return row?.firstElementChild || null;
 }
 
 /**
@@ -41,26 +42,57 @@ function parseVideoUrl(href) {
 }
 
 /**
- * Finds an authored video link in a media cell.
- * @param {Element} media Media cell.
+ * Finds an authored video link in a cell.
+ * @param {Element} cell Field cell.
  * @returns {{ anchor: HTMLAnchorElement, video: { provider: string, id: string } } | null}
  */
-function findVideoLink(media) {
-  let anchors = [...media.querySelectorAll('a[href]')];
+function findVideoLink(cell) {
+  let anchors = [...cell.querySelectorAll('a[href]')];
   if (!anchors.length) {
-    const href = media.textContent.trim();
+    const href = cell.textContent.trim();
     if (parseVideoUrl(href)) {
       const anchor = document.createElement('a');
       anchor.href = href;
       anchor.textContent = href;
-      media.replaceChildren(anchor);
+      cell.replaceChildren(anchor);
       anchors = [anchor];
     }
   }
-  const match = anchors
+
+  return anchors
     .map((anchor) => ({ anchor, video: parseVideoUrl(anchor.href) }))
-    .find((entry) => entry.video);
-  return match || null;
+    .find((entry) => entry.video) || null;
+}
+
+/**
+ * Whether a cell is the optional primary CTA.
+ * @param {Element} cell Field cell.
+ * @returns {boolean}
+ */
+function isCtaCell(cell) {
+  const anchor = cell.querySelector('a.button, strong a[href], em a[href]');
+  return Boolean(anchor && !parseVideoUrl(anchor.href));
+}
+
+/**
+ * Forces the optional CTA into the hard-set primary button treatment.
+ * @param {Element} cell CTA field cell.
+ */
+function decoratePrimaryCta(cell) {
+  const link = cell.querySelector('a[href]');
+  if (!link) return;
+
+  link.classList.add('button', 'primary');
+  const paragraph = link.closest('p');
+  if (paragraph) {
+    paragraph.classList.add('button-wrapper');
+    return;
+  }
+
+  const wrapper = document.createElement('p');
+  wrapper.className = 'button-wrapper';
+  wrapper.append(link);
+  cell.replaceChildren(wrapper);
 }
 
 /**
@@ -75,7 +107,10 @@ function createVideoIframe(video, title) {
   iframe.title = title || (video.provider === 'youtube' ? 'YouTube video' : 'Vimeo video');
   iframe.loading = 'lazy';
   iframe.allowFullscreen = true;
-  iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+  iframe.setAttribute(
+    'allow',
+    'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
+  );
   iframe.src = video.provider === 'youtube'
     ? `https://www.youtube.com/embed/${video.id}?rel=0`
     : `https://player.vimeo.com/video/${video.id}`;
@@ -101,22 +136,41 @@ function decorateVideo(media, video, anchor, title) {
 }
 
 /**
- * Injects VideoObject JSON-LD for SEO when video media is present.
+ * Reads optional VideoObject schema values from cells after the video row.
+ * Upload date is detected by YYYY-MM-DD; remaining cells map to title then description.
+ * @param {Element[]} cells Cells between video and CTA.
+ * @returns {{ uploadDate?: string, title?: string, description?: string }}
+ */
+function readSchemaFields(cells) {
+  const schema = {};
+  const remaining = [...cells];
+  const dateIndex = remaining.findIndex((cell) => DATE_PATTERN.test(cell.textContent.trim()));
+  if (dateIndex >= 0) {
+    schema.uploadDate = remaining[dateIndex].textContent.trim();
+    remaining.splice(dateIndex, 1);
+  }
+  if (remaining[0]) schema.title = remaining[0].textContent.trim();
+  if (remaining[1]) schema.description = remaining[1].textContent.trim();
+  return schema;
+}
+
+/**
+ * Injects VideoObject JSON-LD when optional video is authored.
  * @param {Element} block Block root.
  * @param {{ provider: string, id: string }} video Parsed video.
  * @param {object} schema Schema field values.
- * @param {Element} [content] Text content cell for fallbacks.
+ * @param {Element} [content] Text content for fallbacks.
  */
 function decorateVideoSchema(block, video, schema, content) {
   const heading = content?.querySelector('h1, h2, h3, h4, h5, h6')?.textContent?.trim() || '';
-  const body = [...(content?.querySelectorAll('p:not(.text-with-image-eyebrow):not(.button-wrapper)') || [])]
+  const body = [...(content?.querySelectorAll(
+    'p:not(.text-with-image-sub-heading):not(.button-wrapper)',
+  ) || [])]
     .map((p) => p.textContent.trim())
     .filter(Boolean)
     .join(' ');
 
-  const name = schema['video-title'] || heading;
-  const description = schema['video-description'] || body;
-  const uploadDate = schema['upload-date'];
+  const name = schema.title || heading;
   if (!name) return;
 
   const isYouTube = video.provider === 'youtube';
@@ -124,11 +178,9 @@ function decorateVideoSchema(block, video, schema, content) {
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
     name,
-    description: description || name,
-    thumbnailUrl: schema.thumbnailUrl || (isYouTube
-      ? `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`
-      : undefined),
-    uploadDate: uploadDate || undefined,
+    description: schema.description || body || name,
+    thumbnailUrl: schema.thumbnailUrl || undefined,
+    uploadDate: schema.uploadDate || undefined,
     embedUrl: isYouTube
       ? `https://www.youtube.com/embed/${video.id}`
       : `https://player.vimeo.com/video/${video.id}`,
@@ -148,14 +200,14 @@ function decorateVideoSchema(block, video, schema, content) {
 }
 
 /**
- * Marks the sub heading when the first content child is a paragraph before a heading.
+ * Marks the default sub heading when a paragraph precedes the heading.
  * @param {Element} content Merged text content cell.
  */
 function decorateSubHeading(content) {
   const first = content.firstElementChild;
   const heading = content.querySelector('h1, h2, h3, h4, h5, h6');
   if (first?.tagName === 'P' && heading && first !== heading) {
-    first.classList.add('text-with-image-eyebrow');
+    first.classList.add('text-with-image-sub-heading');
   }
 }
 
@@ -193,7 +245,6 @@ function observeMotion(block) {
 
 /**
  * Applies hard-set layout/theme options from the AEM component baseline.
- * Switch image/text, show CTA, widen image, and Masterbrand Dark are always on.
  * @param {Element} block Text with image block.
  */
 function applyHardOptions(block) {
@@ -202,11 +253,15 @@ function applyHardOptions(block) {
 
 /**
  * Decorates a text with image block.
- * Uses semantic one-column rows so optional text fields do not shift the model.
+ *
+ * Default one-column fields: sub heading, heading, body text, main image (+ alt on image).
+ * Optional fields: YouTube/Vimeo video, schema (upload date, title, description), CTA.
+ *
  * @param {Element} block Text with image block.
  */
 export default function decorate(block) {
   applyHardOptions(block);
+
   const entries = [...block.children]
     .map((row, index) => ({ index, cell: getFieldCell(row) }))
     .filter(({ cell }) => cell);
@@ -216,47 +271,35 @@ export default function decorate(block) {
   const videoEntry = entries
     .map((entry) => ({ ...entry, match: findVideoLink(entry.cell) }))
     .find(({ match }) => match);
-  const ctaEntry = [...entries].reverse().find(({ cell }) => {
-    const anchor = cell.querySelector('a.button, strong a[href]');
-    return anchor && !parseVideoUrl(anchor.href);
-  });
-  if (ctaEntry) {
-    const link = ctaEntry.cell.querySelector('a[href]');
-    link.classList.add('button', 'primary');
-    const paragraph = link.closest('p');
-    if (paragraph) {
-      paragraph.classList.add('button-wrapper');
-    } else {
-      const wrapper = document.createElement('p');
-      wrapper.className = 'button-wrapper';
-      wrapper.append(link);
-      ctaEntry.cell.replaceChildren(wrapper);
-    }
-  }
+  const ctaEntry = [...entries].reverse().find(({ cell }) => isCtaCell(cell));
+  if (ctaEntry) decoratePrimaryCta(ctaEntry.cell);
 
+  // Default media is the main image. Optional video replaces the displayed media.
   const mediaEntry = videoEntry || imageEntry;
-  const mediaIndexes = [imageEntry?.index, videoEntry?.index].filter(Number.isInteger);
+  const reservedIndexes = new Set(
+    [imageEntry?.index, videoEntry?.index, ctaEntry?.index].filter(Number.isInteger),
+  );
+
   const contentEnd = Math.min(
-    ...mediaIndexes,
-    ...(ctaEntry ? [ctaEntry.index] : []),
-    entries.length,
+    ...[imageEntry?.index, videoEntry?.index, ctaEntry?.index, entries.length]
+      .filter(Number.isInteger),
   );
   const textEntries = entries
-    .filter(({ index }) => index < contentEnd)
+    .filter(({ index }) => index < contentEnd && !reservedIndexes.has(index))
     .map(({ cell }) => cell);
   if (ctaEntry) textEntries.push(ctaEntry.cell);
 
   const schemaCells = videoEntry
     ? entries
       .filter(({ index }) => (
-        index > videoEntry.index && index < (ctaEntry?.index ?? entries.length)
+        index > videoEntry.index
+        && index !== imageEntry?.index
+        && index < (ctaEntry?.index ?? entries.length)
       ))
       .map(({ cell }) => cell)
     : [];
   const schema = {
-    'upload-date': schemaCells[0]?.textContent.trim(),
-    'video-title': schemaCells[1]?.textContent.trim(),
-    'video-description': schemaCells[2]?.textContent.trim(),
+    ...readSchemaFields(schemaCells),
     thumbnailUrl: imageEntry?.cell.querySelector('img')?.src,
   };
 
@@ -275,7 +318,7 @@ export default function decorate(block) {
   if (media) {
     media.classList.add('text-with-image-media');
     if (videoEntry) {
-      const title = schema['video-title']
+      const title = schema.title
         || content?.querySelector('h1, h2, h3, h4, h5, h6')?.textContent?.trim()
         || '';
       decorateVideo(media, videoEntry.match.video, videoEntry.match.anchor, title);

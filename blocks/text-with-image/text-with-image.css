@@ -57,7 +57,7 @@ main .text-with-image-container:has(.text-with-image.wide-image)
   border: 0;
 }
 
-.text-with-image .text-with-image-eyebrow {
+.text-with-image .text-with-image-sub-heading {
   margin: 0 0 var(--spacing-layout-01);
   font-family: var(--typography-font-family-600);
   font-size: var(--font-16-size);
@@ -80,7 +80,7 @@ main .text-with-image-container:has(.text-with-image.wide-image)
 }
 
 .text-with-image .text-with-image-content > p:not(
-  .text-with-image-eyebrow,
+  .text-with-image-sub-heading,
   .button-wrapper
 ) {
   margin: 0 0 var(--spacing-layout-03);

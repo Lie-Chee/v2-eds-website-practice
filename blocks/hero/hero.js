@@ -1,3 +1,5 @@
+import { getMetadata } from '../../scripts/aem.js';
+
 function getCell(row) {
   return row.firstElementChild || row;
 }
@@ -18,6 +20,28 @@ function getTextElement(row, className) {
   if (!element.textContent.trim() && !element.querySelector('a')) return null;
   element.className = className;
   return element;
+}
+
+function getAltTextRow(row) {
+  if (!row) return null;
+
+  const cell = getCell(row);
+  return cell.querySelector('picture, h1, h2, h3, h4, h5, h6, a[href]') ? null : row;
+}
+
+function setPictureAlt(picture, row) {
+  const image = picture?.querySelector('img');
+  if (image && row) image.alt = getCell(row).textContent.trim();
+}
+
+function getPageHeading(block) {
+  const heading = [...document.querySelectorAll('main h1')]
+    .find((candidate) => !block.contains(candidate) && candidate.textContent.trim());
+  return heading?.textContent.trim() || document.title.trim();
+}
+
+function getPageDescription() {
+  return getMetadata('description') || getMetadata('og:description');
 }
 
 function splitTextLines(element, text) {
@@ -101,31 +125,66 @@ export default function decorate(block) {
   if (!block.classList.contains('full-width-banner')) return;
 
   const rows = [...block.children];
+  const hasFieldRows = Boolean(
+    rows.length >= 4
+    && rows[0].querySelector('picture')
+    && getAltTextRow(rows[1])
+    && (rows[2].querySelector('h1') || !getCell(rows[2]).textContent.trim())
+    && getAltTextRow(rows[3]),
+  );
+  const optionalRows = hasFieldRows ? rows.slice(4) : rows;
   const imageRows = rows.filter((row) => row.querySelector('picture'));
-  const [backgroundRow, logoRow] = imageRows;
-  const heading = block.querySelector('h1');
-  const headingRow = heading && rows.find((row) => row.contains(heading));
-  const ctaRow = rows.find((row) => {
+  const [firstImageRow, secondImageRow] = imageRows;
+  const backgroundRow = hasFieldRows ? rows[0] : firstImageRow;
+  const logoRow = hasFieldRows
+    ? optionalRows.find((row) => row.querySelector('picture'))
+    : secondImageRow;
+  let heading = hasFieldRows ? rows[2].querySelector('h1') : block.querySelector('h1');
+  const headingRow = hasFieldRows ? rows[2] : heading && rows.find((row) => row.contains(heading));
+  const ctaRow = optionalRows.find((row) => {
     const links = [...row.querySelectorAll('a[href]')];
     return links.length === 1
       && getCell(row).textContent.trim() === links[0].textContent.trim();
   });
+  const backgroundAltCandidate = backgroundRow
+    ? getAltTextRow(rows[rows.indexOf(backgroundRow) + 1])
+    : null;
+  const logoAltCandidate = logoRow
+    ? getAltTextRow(rows[rows.indexOf(logoRow) + 1])
+    : null;
+  const hasSeparateAltRows = hasFieldRows
+    || (backgroundAltCandidate && logoAltCandidate);
+  const backgroundAltRow = hasFieldRows
+    ? getAltTextRow(rows[1])
+    : hasSeparateAltRows && backgroundAltCandidate;
+  const logoAltRow = hasFieldRows
+    ? logoAltCandidate
+    : hasSeparateAltRows && logoAltCandidate;
   const textRows = rows.filter((row) => (
-    !imageRows.includes(row) && row !== headingRow && row !== ctaRow
+    !imageRows.includes(row)
+    && row !== backgroundAltRow
+    && row !== logoAltRow
+    && row !== headingRow
+    && row !== ctaRow
   ));
   const headingIndex = headingRow ? rows.indexOf(headingRow) : -1;
-  const explicitSubheadingRow = textRows.find((row) => row.querySelector('h2, h3, h4, h5, h6'));
-  const subheadingRow = explicitSubheadingRow
-    || (headingRow && textRows.find((row) => rows.indexOf(row) < headingIndex))
-    || (textRows.length > 1 && textRows[0]);
-  const supportingRow = textRows.find((row) => (
+  const explicitSubheadingRow = !hasFieldRows
+    && textRows.find((row) => row.querySelector('h2, h3, h4, h5, h6'));
+  const subheadingRow = hasFieldRows ? null : (
+    explicitSubheadingRow
+      || (headingRow && textRows.find((row) => rows.indexOf(row) < headingIndex))
+      || (textRows.length > 1 && textRows[0])
+  );
+  const supportingRow = hasFieldRows ? rows[3] : textRows.find((row) => (
     row !== subheadingRow && (headingIndex < 0 || rows.indexOf(row) > headingIndex)
   ));
 
   const background = backgroundRow?.querySelector('picture');
   background?.classList.add('hero-banner-background');
+  setPictureAlt(background, backgroundAltRow);
 
   const logo = logoRow?.querySelector('picture');
+  setPictureAlt(logo, logoAltRow);
   let logoContainer = null;
   if (logo) {
     logo.classList.add('hero-banner-logo');
@@ -135,7 +194,18 @@ export default function decorate(block) {
   }
 
   const subheading = getTextElement(subheadingRow, 'hero-banner-subheading');
-  const supportingText = getTextElement(supportingRow, 'hero-banner-supporting-text');
+  const pageHeading = getPageHeading(block);
+  if (!heading?.textContent.trim() && pageHeading) {
+    heading ||= document.createElement('h1');
+    heading.textContent = pageHeading;
+  }
+  let supportingText = getTextElement(supportingRow, 'hero-banner-supporting-text');
+  const pageDescription = getPageDescription();
+  if (!supportingText && pageDescription) {
+    supportingText = document.createElement('p');
+    supportingText.className = 'hero-banner-supporting-text';
+    supportingText.textContent = pageDescription;
+  }
   const cta = getTextElement(ctaRow, 'button-wrapper');
   const ctaLink = cta?.querySelector('a[href]');
 
