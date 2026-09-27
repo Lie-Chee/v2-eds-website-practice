@@ -596,13 +596,13 @@ async function loadHeader(header) {
 }
 
 /**
- * Loads a block named 'footer' into footer
+ * Loads the global Datacom footer into the footer element.
  * @param footer footer element
  * @returns {Promise}
  */
 async function loadFooter(footer) {
-  const footerBlock = buildBlock('footer', '');
-  const existingFooterBlock = footer.querySelector(':scope > .footer');
+  const footerBlock = buildBlock('datacom-footer', '');
+  const existingFooterBlock = footer.querySelector(':scope > .footer, :scope > .datacom-footer');
   if (existingFooterBlock) {
     existingFooterBlock.replaceWith(footerBlock);
   } else {
