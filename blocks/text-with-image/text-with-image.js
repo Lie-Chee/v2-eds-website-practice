@@ -2,12 +2,13 @@ const HARD_CLASSES = ['masterbrand-dark', 'wide-image', 'image-left', 'show-cta'
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
- * Returns the sole cell for a one-column field row.
+ * Returns the value cell from a labelled two-column field row.
+ * Falls back to the sole cell for existing one-column content.
  * @param {Element} row Block row.
  * @returns {Element | null}
  */
 function getFieldCell(row) {
-  return row?.firstElementChild || null;
+  return row?.children[1] || row?.firstElementChild || null;
 }
 
 /**
@@ -254,7 +255,7 @@ function applyHardOptions(block) {
 /**
  * Decorates a text with image block.
  *
- * Default one-column fields: sub heading, heading, body text, main image (+ alt on image).
+ * Default labelled fields: sub heading, heading, body text, main image (+ alt on image).
  * Optional fields: YouTube/Vimeo video, schema (upload date, title, description), CTA.
  *
  * @param {Element} block Text with image block.
