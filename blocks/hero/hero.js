@@ -1,7 +1,7 @@
 import { getMetadata } from '../../scripts/aem.js';
 
 function getCell(row) {
-  return row.firstElementChild || row;
+  return row.children[1] || row.firstElementChild || row;
 }
 
 function getTextElement(row, className) {
