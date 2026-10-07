@@ -4,7 +4,7 @@
         "id": "library",
         "title": "Library",
         "url": "/tools/sidekick/library.html",
-        "environments": ["edit", "dev", "preview"]
+        "environments": ["edit", "dev", "preview", "live"]
       }
     ]
 }
