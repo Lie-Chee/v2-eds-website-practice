@@ -1,4 +1,4 @@
 {
   "extends": ["stylelint-config-standard"],
-  "ignoreFiles": ["styles/font-awesome/all.css"]
+  "ignoreFiles": ["fonts/font-awesome/css/all.css"]
 }
