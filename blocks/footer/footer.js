@@ -56,7 +56,7 @@ function localizeDatacomLink(link, currentCountry) {
     segments[0] = currentCountry;
     const trailingSlash = url.pathname.endsWith('/') ? '/' : '';
     url.pathname = `/${segments.join('/')}${trailingSlash}`;
-    link.href = url.href;
+    link.setAttribute('href', url.href);
   } catch {
     // Leave malformed authored links unchanged.
   }
@@ -621,25 +621,26 @@ function setupResponsiveGroups(groups) {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const animations = new WeakMap();
   const setExpanded = ({ button, content }, expanded, animate = false) => {
+    const panel = content;
     button.setAttribute('aria-expanded', String(expanded));
 
-    const currentAnimation = animations.get(content);
-    const startHeight = content.hidden ? 0 : content.getBoundingClientRect().height;
-    const startStyles = content.hidden ? null : window.getComputedStyle(content);
+    const currentAnimation = animations.get(panel);
+    const startHeight = panel.hidden ? 0 : panel.getBoundingClientRect().height;
+    const startStyles = panel.hidden ? null : window.getComputedStyle(panel);
     const startMarginTop = startStyles?.marginTop || '0px';
     const startMarginBottom = startStyles?.marginBottom || '0px';
     currentAnimation?.cancel();
 
     if (!animate || reducedMotion.matches) {
-      content.hidden = !expanded;
-      content.style.removeProperty('overflow');
-      animations.delete(content);
+      panel.hidden = !expanded;
+      panel.style.removeProperty('overflow');
+      animations.delete(panel);
       return;
     }
 
-    content.hidden = false;
-    const expandedStyles = window.getComputedStyle(content);
-    const animation = content.animate(
+    panel.hidden = false;
+    const expandedStyles = window.getComputedStyle(panel);
+    const animation = panel.animate(
       [
         {
           height: `${startHeight}px`,
@@ -647,7 +648,7 @@ function setupResponsiveGroups(groups) {
           marginBottom: startMarginBottom,
         },
         {
-          height: expanded ? `${content.scrollHeight}px` : '0px',
+          height: expanded ? `${panel.scrollHeight}px` : '0px',
           marginTop: expanded ? expandedStyles.marginTop : '0px',
           marginBottom: expanded ? expandedStyles.marginBottom : '0px',
         },
@@ -657,23 +658,35 @@ function setupResponsiveGroups(groups) {
         easing: 'ease-in-out',
       },
     );
-    animations.set(content, animation);
-    content.style.overflow = 'hidden';
+    animations.set(panel, animation);
+    panel.style.overflow = 'hidden';
     animation.finished.then(() => {
-      if (animations.get(content) !== animation) return;
-      content.hidden = !expanded;
-      content.style.removeProperty('overflow');
-      animations.delete(content);
+      if (animations.get(panel) !== animation) return;
+      panel.hidden = !expanded;
+      panel.style.removeProperty('overflow');
+      animations.delete(panel);
     }).catch(() => {});
   };
   const syncGroups = () => {
     groups.forEach((group) => setExpanded(group, !mobile.matches));
   };
+  const toggleGroup = (group) => {
+    setExpanded(group, group.button.getAttribute('aria-expanded') !== 'true', true);
+  };
 
   groups.forEach((group) => {
     group.button.addEventListener('click', () => {
       if (!mobile.matches) return;
-      setExpanded(group, group.button.getAttribute('aria-expanded') !== 'true', true);
+      toggleGroup(group);
+    });
+
+    const column = group.group.closest('.footer-column');
+    column?.classList.add('footer-column-collapsible');
+    column?.addEventListener('click', (event) => {
+      if (!mobile.matches || event.target.closest('a, button, input, select, textarea, label')) {
+        return;
+      }
+      toggleGroup(group);
     });
   });
 

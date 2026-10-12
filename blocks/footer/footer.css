@@ -24,6 +24,10 @@ footer .footer .footer-column > div {
   height: 100%;
 }
 
+footer .footer .footer-column-collapsible {
+  cursor: pointer;
+}
+
 footer .footer p,
 footer .footer .footer-link-group {
   margin: 0;
@@ -159,6 +163,10 @@ footer .footer .footer-copyright {
 }
 
 @media (width >= 901px) {
+  footer .footer .footer-column-collapsible {
+    cursor: default;
+  }
+
   footer .footer > .footer-content {
     box-sizing: content-box;
     flex-direction: row;
